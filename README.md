@@ -1,66 +1,78 @@
 # The Notebook – Multi‑File Markdown Editor
 
-## Why this project
-I chose “The Notebook” because it highlights practical UI thinking and real‑time UX. It’s a focused, front‑end‑only build that still demonstrates structure, state modeling, persistence, and a great editing workflow — exactly the kind of problem where prompt engineering with Cursor shines.
+## Project Choice
+I chose Idea #1: “The Notebook” – a three‑panel, browser‑based Markdown editor with file management and live preview.
 
 Repo: https://github.com/yin-0128/notebook-markdown-editor
 
-## What you get
-- Multi‑file Markdown editing with a clean 3‑panel layout
-  - Left: files (create, rename, delete, switch)
-  - Middle: editor (autosave, keyboard shortcut)
-  - Right: live preview (Markdown → HTML)
-- Local‑only persistence (no backend) via localStorage
-- Useful extras for productivity
-  - Search files by name (instant filter in the header)
-  - Import .md files and Export the current note as .md
-  - Stats bar (lines, words, characters) + visible “Saving…/Saved” indicator
-  - Ctrl/Cmd+S forces save
-  - Mobile‑friendly layout with a floating + button for quick create
+## Justification of Tools
+- **React + Vite**: Fast dev server and simple build. React state cleanly models files and editor interactions.
+- **Tailwind CSS (v4)**: Rapid iteration on layout/spacing/typography with a consistent design system.
+- **@tailwindcss/typography**: Better reading experience in the preview pane.
+- **marked**: Lightweight Markdown → HTML conversion with good performance.
+- **localStorage**: Zero‑backend persistence; perfect for a lightweight, offline‑friendly tool.
+- **Cursor (AI code editor)**: To accelerate scaffolding, component wiring, and iteration on UX.
 
-## Tech stack
+## High‑Level Approach
+- Model files as `{ id, name, content, updatedAt }` and keep `selectedFileId` at the app level.
+- Persist to `localStorage` with a small debounce for smooth typing; support Ctrl/Cmd+S.
+- Split UI into small components: `Header`, `FileList`, `Editor`, `Preview`, `StatsBar`.
+- Add enhancements for real‑world usability: search, import/export, save indicator, stats, dark mode, draggable splitter.
+- Keep design clean: rounded panels, subtle borders/shadows, good typography, responsive behavior.
+
+## Final Prompts (copy‑pastable)
+Master instruction used in Cursor to drive implementation:
+```
+You are an expert frontend engineer helping me build a project for a coding assessment. Build “The Notebook” — a multi‑file Markdown editor with a three‑panel layout (left: file list; middle: editor; right: live preview).
+
+Rules:
 - React + Vite
-- Tailwind CSS (v4) with @tailwindcss/postcss
-- marked (Markdown parsing)
-- localStorage API
+- Tailwind CSS (+ @tailwindcss/typography)
+- marked for Markdown preview
+- localStorage for saving/loading; no backend
+- Components: Header, FileList, Editor, Preview, StatsBar
+- Features: create/rename/delete/switch files, search by filename, import/export .md, autosave with indicator, Ctrl/Cmd+S save, dark mode toggle, draggable splitter between middle/right, mobile floating + button
+- Keep the design modern, readable, and responsive; add comments where helpful
+- Implement step by step and explain each file before generating
+```
 
-## How it works (high level)
-- State model: `files: Array<{ id, name, content, updatedAt }>` and `selectedFileId`
-- On first load, seed with one default note
-- Persist to localStorage on every edit (debounced) and on Ctrl/Cmd+S
-- Live preview uses marked to convert Markdown to HTML
-- Header provides: search, New, Export, Import
-- Editor updates state; StatsBar shows counts and save state
-
-## Run it locally
+## Instructions (run and reproduce)
+- Local dev
 ```bash
 npm install
 npm run dev
 ```
-Then open the URL shown in your terminal.
-
-## Build for production
+- Build
 ```bash
 npm run build
 ```
-The static bundle is emitted to `dist/`.
+- Preview production build
+```bash
+npm run preview
+```
 
-## Security note
-This is a client‑side app. If you plan to allow raw HTML in Markdown from untrusted sources, consider sanitizing the preview (e.g., with DOMPurify). For this assessment, the focus is UX and local persistence.
+## What’s Implemented
+- Three panels: file list, editor, live preview
+- File operations: new, rename, delete, switch
+- Search in header (filters file list instantly)
+- Import .md and export current note as .md
+- Autosave with debounced persistence + visible “Saving…/Saved” state
+- Keyboard: Ctrl/Cmd+S to save
+- Stats bar (lines, words, characters)
+- Dark mode toggle (persisted) and improved typography for preview
+- Draggable splitter between editor and preview (desktop)
+- Mobile‑friendliness with floating + button
 
-## Design and UX choices (humanized)
-- Keep the interface quiet and obvious: files on the left, typing center, preview right.
-- Make routine actions fast: New/Export/Import are one click away at the top.
-- Show confidence in saving: a subtle “Saving…/Saved” indicator plus Ctrl/Cmd+S.
-- Help with focus: a clean, airy layout; independent scroll areas; readable typography.
-- Be mobile considerate: quick + button, stacks sensibly on small screens.
+## Challenges & Iterations
+- **Tailwind v4 PostCSS plugin**: Switched to `@tailwindcss/postcss` and updated config to fix builds.
+- **PowerShell command chaining**: Re‑ran setup steps sequentially instead of using `&&`.
+- **Design**: Added typography plugin, refined spacing, and a dark theme to address “plain” look.
+- **Usability polish**: Implemented search, import/export, save indicator, stats, and splitter for professional feel.
 
-## Future improvements
-- Inline rename and drag‑to‑reorder in the file list
-- Global search across content (not just names)
-- Per‑note themes and font sizing
-- Import/export workspace as JSON; GitHub Gist sync option
-- Simple command palette (Ctrl/Cmd+K)
+## Optional Deployment
+- Any static host works (e.g., Vercel, Netlify, GitHub Pages). The build output is `dist/`.
+- If deployed, add the public URL here:
+  - Deployment: <your_public_url>
 
 ---
-If you’re reviewing this: I optimized for clarity, responsiveness, and a humane editing flow. The code is intentionally readable with straightforward state and small, focused components.
+If you’re reviewing this, I aimed for a clear, responsive, and humane editing flow with straightforward state and readable components.
