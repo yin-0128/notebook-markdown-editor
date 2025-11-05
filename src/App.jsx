@@ -3,6 +3,7 @@ import Header from './components/Header'
 import FileList from './components/FileList'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
+import StatsBar from './components/StatsBar'
 
 const STORAGE_KEY = 'notebookFiles'
 
@@ -27,15 +28,29 @@ export default function App() {
     }
   })
   const [selectedFileId, setSelectedFileId] = useState(() => files[0]?.id ?? null)
+  const [filter, setFilter] = useState('')
+  const [isSaved, setIsSaved] = useState(true)
+  const [importInputKey, setImportInputKey] = useState(0)
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(files))
-    } catch {
-      // ignore persistence errors for now
-    }
+    // debounce save to localStorage
+    setIsSaved(false)
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(files))
+      } catch {
+        // ignore persistence errors for now
+      }
+      setIsSaved(true)
+    }, 400)
+    return () => clearTimeout(t)
   }, [files])
 
+  const filteredFiles = useMemo(() => {
+    const q = filter.trim().toLowerCase()
+    if (!q) return files
+    return files.filter(f => f.name.toLowerCase().includes(q))
+  }, [files, filter])
   const selectedFile = useMemo(() => files.find(f => f.id === selectedFileId) || null, [files, selectedFileId])
 
   function handleCreate() {
@@ -78,13 +93,60 @@ export default function App() {
     setFiles(files.map(f => (f.id === selectedFile.id ? { ...f, content: next, updatedAt: Date.now() } : f)))
   }
 
+  function handleExport() {
+    if (!selectedFile) return
+    const blob = new Blob([selectedFile.content || ''], { type: 'text/markdown;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = selectedFile.name || 'note.md'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  }
+
+  function handleImport(filesList) {
+    const file = filesList?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const content = String(reader.result || '')
+      const newFile = { id: crypto.randomUUID(), name: file.name || 'Imported.md', content, updatedAt: Date.now() }
+      setFiles([newFile, ...files])
+      setSelectedFileId(newFile.id)
+      setImportInputKey(k => k + 1)
+    }
+    reader.readAsText(file)
+  }
+
+  useEffect(() => {
+    function onKeydown(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault()
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(files))
+          setIsSaved(true)
+        } catch {}
+      }
+    }
+    window.addEventListener('keydown', onKeydown)
+    return () => window.removeEventListener('keydown', onKeydown)
+  }, [files])
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
-      <Header />
+      <Header
+        filter={filter}
+        onFilterChange={setFilter}
+        onCreate={handleCreate}
+        onExport={handleExport}
+        onImportClick={() => document.getElementById('import-input')?.click()}
+      />
       <div className="mx-auto max-w-7xl h-[calc(100vh-56px)] px-4 py-4">
         <div className="h-full flex rounded-lg border border-gray-200 overflow-hidden bg-white">
           <FileList
-            files={files}
+            files={filteredFiles}
             selectedFileId={selectedFileId}
             onCreate={handleCreate}
             onSelect={handleSelect}
@@ -94,12 +156,21 @@ export default function App() {
           <main className="flex-1 grid grid-cols-1 xl:grid-cols-2">
             <section className="border-r border-gray-200">
               <Editor value={selectedFile?.content ?? ''} onChange={handleContentChange} />
+              <StatsBar value={selectedFile?.content ?? ''} saved={isSaved} />
             </section>
             <section className="hidden xl:block">
               <Preview value={selectedFile?.content ?? ''} />
             </section>
           </main>
         </div>
+        <input
+          id="import-input"
+          key={importInputKey}
+          type="file"
+          accept=".md,text/markdown,text/plain"
+          className="hidden"
+          onChange={(e) => handleImport(e.target.files)}
+        />
         {/* Floating action button for new file on small screens */}
         <button
           onClick={handleCreate}

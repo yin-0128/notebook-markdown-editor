@@ -1,52 +1,66 @@
-# The Notebook - Multi-File Markdown Editor
+# The Notebook – Multi‑File Markdown Editor
 
-## Overview
-A client-side Markdown editor with a 3-panel layout: file list, editor, and live preview. Built with React + Vite, Tailwind CSS, and marked. Files persist in localStorage.
+## Why this project
+I chose “The Notebook” because it highlights practical UI thinking and real‑time UX. It’s a focused, front‑end‑only build that still demonstrates structure, state modeling, persistence, and a great editing workflow — exactly the kind of problem where prompt engineering with Cursor shines.
 
-## Tech Stack
+Repo: https://github.com/yin-0128/notebook-markdown-editor
+
+## What you get
+- Multi‑file Markdown editing with a clean 3‑panel layout
+  - Left: files (create, rename, delete, switch)
+  - Middle: editor (autosave, keyboard shortcut)
+  - Right: live preview (Markdown → HTML)
+- Local‑only persistence (no backend) via localStorage
+- Useful extras for productivity
+  - Search files by name (instant filter in the header)
+  - Import .md files and Export the current note as .md
+  - Stats bar (lines, words, characters) + visible “Saving…/Saved” indicator
+  - Ctrl/Cmd+S forces save
+  - Mobile‑friendly layout with a floating + button for quick create
+
+## Tech stack
 - React + Vite
-- Tailwind CSS
-- marked (Markdown to HTML)
-- localStorage (persistence)
+- Tailwind CSS (v4) with @tailwindcss/postcss
+- marked (Markdown parsing)
+- localStorage API
 
-## Features
-- Create, rename, delete, and switch between Markdown files
-- Live preview as you type
-- Autosave to localStorage
-- Responsive layout with floating new-file button on mobile
+## How it works (high level)
+- State model: `files: Array<{ id, name, content, updatedAt }>` and `selectedFileId`
+- On first load, seed with one default note
+- Persist to localStorage on every edit (debounced) and on Ctrl/Cmd+S
+- Live preview uses marked to convert Markdown to HTML
+- Header provides: search, New, Export, Import
+- Editor updates state; StatsBar shows counts and save state
 
-## Getting Started
+## Run it locally
 ```bash
 npm install
 npm run dev
 ```
+Then open the URL shown in your terminal.
 
-## Build
+## Build for production
 ```bash
 npm run build
 ```
+The static bundle is emitted to `dist/`.
 
-## Notes
-- Preview uses marked; consider sanitizing HTML output (e.g., DOMPurify) for untrusted content.
-- All data stays in the browser; no backend required.
+## Security note
+This is a client‑side app. If you plan to allow raw HTML in Markdown from untrusted sources, consider sanitizing the preview (e.g., with DOMPurify). For this assessment, the focus is UX and local persistence.
 
-## Future Improvements
-- Search across files
-- Import/export files
-- Keyboard shortcuts and rename inline UX
-# React + Vite
+## Design and UX choices (humanized)
+- Keep the interface quiet and obvious: files on the left, typing center, preview right.
+- Make routine actions fast: New/Export/Import are one click away at the top.
+- Show confidence in saving: a subtle “Saving…/Saved” indicator plus Ctrl/Cmd+S.
+- Help with focus: a clean, airy layout; independent scroll areas; readable typography.
+- Be mobile considerate: quick + button, stacks sensibly on small screens.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Future improvements
+- Inline rename and drag‑to‑reorder in the file list
+- Global search across content (not just names)
+- Per‑note themes and font sizing
+- Import/export workspace as JSON; GitHub Gist sync option
+- Simple command palette (Ctrl/Cmd+K)
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+If you’re reviewing this: I optimized for clarity, responsiveness, and a humane editing flow. The code is intentionally readable with straightforward state and small, focused components.
