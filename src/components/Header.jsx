@@ -37,46 +37,64 @@ export function Header({ onExport, onImport, hasSelectedFile }) {
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center px-4 gap-4">
-        <div className="flex items-center gap-3">
-          {/* Stylish AdoNote Logo */}
-          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
-            <svg 
-              viewBox="0 0 24 24" 
-              className="w-5 h-5 text-white"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path 
-                d="M12 3L4 7V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V7L14 3L12 3Z" 
-                fill="currentColor"
-                opacity="0.2"
-              />
-              <path 
-                d="M9 11L11 13L15 9" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-              <circle 
-                cx="12" 
-                cy="12" 
-                r="8" 
-                stroke="currentColor" 
-                strokeWidth="2"
-              />
-            </svg>
-            <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-blue-400 rounded-full"></div>
+      <div className="flex h-16 items-center px-4 gap-4">
+        <div className="flex items-center gap-4">
+          {/* Professional Notebook Logo - EXACT match to favicon */}
+          <div className="relative group">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-600 rounded-lg blur-md opacity-40 group-hover:opacity-60 transition-all duration-300"></div>
+            {/* Logo matching favicon exactly - blue to indigo to purple gradient */}
+            <div className="relative w-9 h-9 rounded-lg flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:scale-105 overflow-hidden">
+              <svg 
+                viewBox="0 0 32 32" 
+                className="w-full h-full"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient id="headerBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: '#3b82f6', stopOpacity: 1 }} />
+                    <stop offset="50%" style={{ stopColor: '#6366f1', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#8b5cf6', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+                
+                {/* Background rounded square */}
+                <rect width="32" height="32" rx="6" fill="url(#headerBgGradient)"/>
+                
+                {/* Notebook icon */}
+                <g transform="translate(8, 6)">
+                  {/* Main notebook outline */}
+                  <rect x="0" y="0" width="16" height="20" rx="2" stroke="white" strokeWidth="2" fill="none"/>
+                  {/* Spine line */}
+                  <path d="M4 0 L4 20" stroke="white" strokeWidth="1.5" opacity="0.5"/>
+                  {/* Text lines */}
+                  <line x1="7" y1="6" x2="13" y2="6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="7" y1="10" x2="13" y2="10" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="7" y1="14" x2="11" y2="14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                </g>
+                
+                {/* Bookmark accent */}
+                <path d="M22 6 L22 14 L25 11.5 L28 14 L28 6 Z" fill="white" opacity="0.9"/>
+              </svg>
+            </div>
           </div>
-          <h1 className="text-xl font-bold tracking-tight">
-            <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
-              Note
-            </span>
-            <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 bg-clip-text text-transparent italic">
-              book
-            </span>
-          </h1>
+          <div className="flex flex-col gap-1">
+            <h1 className="text-[24px] leading-none select-none font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent" style={{ 
+              fontFamily: "'Poppins', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+              letterSpacing: '0.05em',
+              fontWeight: 800,
+              fontSize: '24px'
+            }}>
+              Notebook
+            </h1>
+            <p className="text-[12px] text-muted-foreground tracking-[0.2em] uppercase font-semibold pl-0.5" style={{ 
+              fontFamily: "'Poppins', sans-serif",
+              letterSpacing: '0.2em',
+              fontSize: '12px'
+            }}>
+              Markdown Editor
+            </p>
+          </div>
         </div>
         
         <div className="ml-auto flex items-center gap-2">
