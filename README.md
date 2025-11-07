@@ -121,7 +121,7 @@ Implementation approach:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/notebook-markdown-editor.git
+git clone https://github.com/yin-0128/notebook-markdown-editor
 cd notebook-markdown-editor
 
 # Install dependencies
