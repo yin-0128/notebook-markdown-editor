@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FileList } from './components/FileList';
 import { MarkdownEditor } from './components/MarkdownEditor';
 import { MarkdownPreview } from './components/MarkdownPreview';
 import { Header } from './components/Header';
+import StatsBar from './components/StatsBar';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from './components/ui/resizable';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
@@ -12,6 +13,8 @@ const STORAGE_KEY = 'notebook-markdown-files';
 function App() {
   const [files, setFiles] = useState([]);
   const [selectedFileId, setSelectedFileId] = useState(null);
+  const [isSaved, setIsSaved] = useState(true);
+  const saveTimeoutRef = useRef(null);
 
   // Load files from localStorage on mount
   useEffect(() => {
@@ -96,11 +99,35 @@ Happy writing! ✨`,
     }
   }, []);
 
+  // Reset save state when switching files
+  useEffect(() => {
+    setIsSaved(true);
+  }, [selectedFileId]);
+
   // Save files to localStorage whenever they change
   useEffect(() => {
     if (files.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
+      // Set saving state
+      setIsSaved(false);
+      
+      // Clear existing timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      
+      // Debounce the save operation
+      saveTimeoutRef.current = setTimeout(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
+        setIsSaved(true);
+      }, 500); // 500ms debounce
     }
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [files]);
 
   const selectedFile = files.find((f) => f.id === selectedFileId);
@@ -271,6 +298,12 @@ Happy writing! ✨`,
           />
         </ResizablePanel>
       </ResizablePanelGroup>
+
+      {/* Stats Bar */}
+      <StatsBar 
+        value={selectedFile?.content || ''} 
+        saved={isSaved} 
+      />
 
       <Toaster />
     </div>
